@@ -20,6 +20,26 @@ const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__
 
 const mapPins = map.querySelector(`.map__pins`);
 
+const typesOfHousing = {
+  palace: `Дворец`,
+  flat: `Квартира`,
+  house: `Дом`,
+  bungalo: `Бунгало`,
+};
+
+const featuresClasses = {
+  wifi: `popup__feature--wifi`,
+  dishwasher: `popup__feature--dishwasher`,
+  parking: `popup__feature--parking`,
+  washer: `popup__feature--washer`,
+  elevator: `popup__feature--elevator`,
+  conditioner: `popup__feature--conditioner`,
+};
+
+
+const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
+
+const mapFilterContainer = map.querySelector(`.map__filters-container`);
 
 const getRandomNumbers = (min, max) => {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -30,8 +50,14 @@ const getRandomArray = (array) => {
 };
 
 const setLeadingZero = (index) => {
-  return index < PINS_AMOUNT ? `0${index}` : index;
+  return index <= PINS_AMOUNT ? `0${index}` : index;
 };
+
+const declension = (forms, number) => {
+  const cases = [2, 0, 1, 1, 1, 2];
+  return forms[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
+};
+
 
 const createTemplate = (i) => {
   const type = getRandomArray(TYPES);
@@ -50,7 +76,7 @@ const createTemplate = (i) => {
       avatar: `img/avatars/user` + index + `.png`
     },
     offer: {
-      title: `Заголовок предложения`,
+      title: `Заголовок объявления`,
       address: location.x + `, ` + location.y,
       price: getRandomNumbers(0, 1000001),
       type,
@@ -77,6 +103,32 @@ const fillAds = (quantity) => {
 };
 
 
+const renderPhotos = (photos, container) => {
+  const fragment = document.createDocumentFragment();
+  const photoTemplate = container.querySelector(`.popup__photo`);
+  let newPhoto;
+  container.innerHTML = ``;
+
+  photos.forEach((item) => {
+    newPhoto = photoTemplate.cloneNode(false);
+    newPhoto.src = item;
+    fragment.appendChild(newPhoto);
+  });
+
+  container.appendChild(fragment);
+};
+//  FEATURES
+const renderFeatures = (features, container) => {
+  container.innerHTML = ``;
+
+  features.forEach((item) => {
+    const li = document.createElement(`li`);
+    li.classList.add(`popup__feature`, featuresClasses[item]);
+    container.appendChild(li);
+  });
+};
+
+
 const setPin = (pin) => {
 
   const pinElement = pinTemplate.cloneNode(true);
@@ -94,6 +146,39 @@ const setPin = (pin) => {
   return pinElement;
 };
 
+
+const setCard = (adsElement) => {
+  // копируем коллекцию
+  const cardElement = cardTemplate.cloneNode(true);
+
+  const {title, address, price, type, rooms, guests, checkin, checkout, description, features, photos} = adsElement.offer;
+
+  const roomsForm = declension([`комната`, `комнаты`, `комнат`], rooms);
+
+  const guestsForm = declension([`гостя`, `гостей`, `гостей`], guests);
+  // выводим данные в модальное окно
+  cardElement.querySelector(`.popup__title`).textContent = title;
+
+  cardElement.querySelector(`.popup__text--address`).textContent = address;
+
+  cardElement.querySelector(`.popup__text--price`).firstChild.textContent = `${price}\u20BD`;
+
+  cardElement.querySelector(`.popup__type`).textContent = typesOfHousing[type];
+
+  cardElement.querySelector(`.popup__text--capacity`).textContent = `${rooms} ${roomsForm} для ${guests} ${guestsForm}`;
+
+  cardElement.querySelector(`.popup__text--time`).textContent = `Заезд после ${checkin} выезд до ${checkout}`;
+
+  cardElement.querySelector(`.popup__description`).textContent = description;
+
+  renderFeatures(features, cardElement.querySelector(`.popup__features`));
+  renderPhotos(photos, cardElement.querySelector(`.popup__photos`));
+  cardElement.querySelector(`.popup__avatar`).src = adsElement.author.avatar;
+
+  return cardElement;
+};
+
+
 const renderPinsOnMap = (pins) => {
   const fragment = document.createDocumentFragment();
   for (let i = 0; i < pins.length; i++) {
@@ -104,6 +189,11 @@ const renderPinsOnMap = (pins) => {
 };
 
 
+const renderCardOnMap = (adsElement) => {
+  map.insertBefore(setCard(adsElement), mapFilterContainer);
+};
+
+
 const init = () => {
   const adsList = fillAds(PINS_AMOUNT);
   renderPinsOnMap(adsList);
@@ -111,3 +201,4 @@ const init = () => {
 };
 
 init();
+renderCardOnMap();
