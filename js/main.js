@@ -63,8 +63,9 @@ const createTemplate = (i) => {
   const type = getRandomArray(TYPES);
   const checkin = getRandomArray(CHECK_IN);
   const checkout = getRandomArray(CHECK_IN);
-  const features = getRandomArray(FEATURES);
-  const photos = getRandomArray(PHOTOS);
+  // const features = getRandomArray(FEATURES);
+  const features = FEATURES.slice(0, getRandomNumbers(0, FEATURES.length));
+  const photos = PHOTOS.slice();
   const location = {
     x: getRandomNumbers(40, 1160),
     y: getRandomNumbers(130, 630)
@@ -117,7 +118,7 @@ const renderPhotos = (photos, container) => {
 
   container.appendChild(fragment);
 };
-//  FEATURES
+
 const renderFeatures = (features, container) => {
   container.innerHTML = ``;
 
@@ -197,8 +198,9 @@ const renderCardOnMap = (adsElement) => {
 const init = () => {
   const adsList = fillAds(PINS_AMOUNT);
   renderPinsOnMap(adsList);
+  renderCardOnMap(adsList[0]);
   map.classList.remove(`map--faded`);
 };
 
 init();
-renderCardOnMap();
+
