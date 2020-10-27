@@ -1,4 +1,10 @@
 'use strict';
+// контр указания адреса объявления
+const mapPin = document.querySelector(`.map__pin--main`);
+
+const fields = document.querySelectorAll(`.ad-form fieldset`);
+
+const mapFilters = document.querySelectorAll(`.map__filters select, .map__filters fieldset`);
 
 const PINS_AMOUNT = 8;
 
@@ -20,12 +26,14 @@ const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__
 
 const mapPins = map.querySelector(`.map__pins`);
 
+
 const typesOfHousing = {
   palace: `Дворец`,
   flat: `Квартира`,
   house: `Дом`,
   bungalo: `Бунгало`,
 };
+
 
 const featuresClasses = {
   wifi: `popup__feature--wifi`,
@@ -36,22 +44,41 @@ const featuresClasses = {
   conditioner: `popup__feature--conditioner`,
 };
 
-
+// модальное окно с информацией об объявлении
 const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
-
+// фильтрация объявлений: тип жилья, стоимость, число комнат, число жильцов
 const mapFilterContainer = map.querySelector(`.map__filters-container`);
+
+
+const adForm = document.querySelector(`.ad-form`);
+const addressInput = adForm.querySelector(`#address`);
+
+const initialMainPinSettings = {
+  location: {
+    x: mapPin.offsetLeft,
+    y: mapPin.offsetTop,
+  },
+  size: {
+    width: mapPin.offsetWidth,
+    height: mapPin.offsetHeight
+  }
+};
+
 
 const getRandomNumbers = (min, max) => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
+
 const getRandomArray = (array) => {
   return array[Math.floor(Math.random() * array.length)];
 };
 
+
 const setLeadingZero = (index) => {
   return index <= PINS_AMOUNT ? `0${index}` : index;
 };
+
 
 const declension = (forms, number) => {
   const cases = [2, 0, 1, 1, 1, 2];
@@ -63,7 +90,6 @@ const createTemplate = (i) => {
   const type = getRandomArray(TYPES);
   const checkin = getRandomArray(CHECK_IN);
   const checkout = getRandomArray(CHECK_IN);
-  // const features = getRandomArray(FEATURES);
   const features = FEATURES.slice(0, getRandomNumbers(0, FEATURES.length));
   const photos = PHOTOS.slice();
   const location = {
@@ -93,6 +119,7 @@ const createTemplate = (i) => {
   };
 };
 
+
 const fillAds = (quantity) => {
   const adsList = [];
 
@@ -103,7 +130,7 @@ const fillAds = (quantity) => {
   return adsList;
 };
 
-
+// фотографии
 const renderPhotos = (photos, container) => {
   const fragment = document.createDocumentFragment();
   const photoTemplate = container.querySelector(`.popup__photo`);
@@ -119,6 +146,7 @@ const renderPhotos = (photos, container) => {
   container.appendChild(fragment);
 };
 
+
 const renderFeatures = (features, container) => {
   container.innerHTML = ``;
 
@@ -127,6 +155,13 @@ const renderFeatures = (features, container) => {
     li.classList.add(`popup__feature`, featuresClasses[item]);
     container.appendChild(li);
   });
+};
+
+const getPinLocation = (location, pinSizes) => {
+  return {
+    x: Math.round(location.x + pinSizes.width / 2),
+    y: Math.round(location.y + pinSizes.height / 2)
+  };
 };
 
 
@@ -195,12 +230,102 @@ const renderCardOnMap = (adsElement) => {
 };
 
 
-const init = () => {
+const addDisabled = () => {
+
+  fields.forEach((item) => {
+    item.setAttribute(`disabled`, true);
+  });
+
+  mapFilters.forEach((item) => {
+    item.setAttribute(`disabled`, true);
+  });
+};
+
+
+const setValidation = () => {
+  if (parseInt(adForm.rooms.value, 10) === 100 && parseInt(adForm.capacity.value, 10) > 0) {
+    adForm.capacity.setCustomValidity(`Не для гостей`);
+  } else if (parseInt(adForm.rooms.value, 10) < parseInt(adForm.capacity.value, 10)) {
+    adForm.capacity.setCustomValidity(`На всех гостей комнат не хватит`);
+  } else if (parseInt(adForm.rooms.value, 10) !== 100 && !parseInt(adForm.capacity.value, 10)) {
+    adForm.capacity.setCustomValidity(`Для гостей`);
+  } else {
+    adForm.capacity.setCustomValidity(``);
+  }
+};
+
+const setCapacityDisabled = () => {
+  const roomValue = parseInt(adForm.rooms.value, 10);
+
+  Array.from(adForm.capacity.options).forEach((item) => {
+    const optionCapacity = parseInt(item.value, 10);
+
+    if (roomValue === 100) {
+      item.disabled = !!optionCapacity;
+    } else {
+      item.disabled = roomValue < optionCapacity || !optionCapacity;
+    }
+  });
+};
+
+const setInputValue = (element, value) => {
+  element.value = value;
+};
+
+const setCapacityValue = () => {
+  adForm.capacity.value = adForm.rooms.value < 100 ? adForm.rooms.value : 0;
+};
+
+const roomsChange = () => {
+  setCapacityValue();
+  setCapacityDisabled();
+};
+
+const capacityChange = () => {
+  setValidation();
+};
+
+const onAdFormClick = () => {
+  setValidation();
+};
+
+
+const onMapPinClick = function () {
+
   const adsList = fillAds(PINS_AMOUNT);
+  const mainPinLocation = getPinLocation(initialMainPinSettings.location, initialMainPinSettings.size);
+  setInputValue(addressInput, `${mainPinLocation.x}, ${mainPinLocation.y}`);
+  setCapacityValue();
+  setCapacityDisabled();
   renderPinsOnMap(adsList);
   renderCardOnMap(adsList[0]);
   map.classList.remove(`map--faded`);
+
+  fields.forEach((item) => {
+    item.removeAttribute(`disabled`);
+  });
+
+  // mapFilters.removeAttribute(`disabled`);
+
+  mapFilters.forEach((item) => {
+    item.removeAttribute(`disabled`);
+  });
+  mapPin.removeEventListener(`click`, onMapPinClick);
 };
 
-init();
 
+mapPin.addEventListener(`click`, onMapPinClick);
+
+adForm.capacity.addEventListener(`change`, capacityChange);
+
+adForm.rooms.addEventListener(`change`, roomsChange);
+
+adForm.querySelector(`.ad-form__submit`).addEventListener(`click`, onAdFormClick);
+
+
+const init = () => {
+  addDisabled();
+};
+
+
+init();
