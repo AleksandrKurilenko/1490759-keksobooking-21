@@ -1,10 +1,4 @@
 'use strict';
-// контр указания адреса объявления
-const mapPin = document.querySelector(`.map__pin--main`);
-
-const fields = document.querySelectorAll(`.ad-form fieldset`);
-
-const mapFilters = document.querySelectorAll(`.map__filters select, .map__filters fieldset`);
 
 const PINS_AMOUNT = 8;
 
@@ -20,20 +14,12 @@ const PHOTOS = [
   `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
 ];
 
-const map = document.querySelector(`.map`);
-
-const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
-
-const mapPins = map.querySelector(`.map__pins`);
-
-
 const typesOfHousing = {
   palace: `Дворец`,
   flat: `Квартира`,
   house: `Дом`,
   bungalo: `Бунгало`,
 };
-
 
 const featuresClasses = {
   wifi: `popup__feature--wifi`,
@@ -44,13 +30,25 @@ const featuresClasses = {
   conditioner: `popup__feature--conditioner`,
 };
 
+const mapPin = document.querySelector(`.map__pin--main`);
+
+const fields = document.querySelectorAll(`.ad-form fieldset`);
+
+const mapFilters = document.querySelectorAll(`.map__filters select, .map__filters fieldset`);
+
+const map = document.querySelector(`.map`);
+
+const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+
+const mapPins = map.querySelector(`.map__pins`);
+
 // модальное окно с информацией об объявлении
 const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
 // фильтрация объявлений: тип жилья, стоимость, число комнат, число жильцов
 const mapFilterContainer = map.querySelector(`.map__filters-container`);
 
-
 const adForm = document.querySelector(`.ad-form`);
+
 const addressInput = adForm.querySelector(`#address`);
 
 const initialMainPinSettings = {
@@ -300,7 +298,7 @@ const onMapPinClick = function () {
   renderPinsOnMap(adsList);
   renderCardOnMap(adsList[0]);
   map.classList.remove(`map--faded`);
-
+  adForm.classList.remove(`ad-form--disabled`);
   fields.forEach((item) => {
     item.removeAttribute(`disabled`);
   });
@@ -313,6 +311,16 @@ const onMapPinClick = function () {
   mapPin.removeEventListener(`click`, onMapPinClick);
 };
 
+const userTimeIn = document.querySelector(`#timein`);
+const userTimeOut = document.querySelector(`#timeout`);
+
+userTimeIn.addEventListener(`change`, function () {
+  userTimeOut.value = userTimeIn.value;
+});
+
+userTimeOut.addEventListener(`change`, function () {
+  userTimeIn.value = userTimeOut.value;
+});
 
 mapPin.addEventListener(`click`, onMapPinClick);
 
