@@ -6,7 +6,31 @@ const TYPES = [`palace`, `flat`, `house`, `bungalo`];
 
 const CHECK_IN = [`12:00`, `13:00`, `14:00`];
 
-const FEATURES = [`wifi`, `dishwasher`, `parking`, `parking`, `elevator`, `conditioner`];
+const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
+
+const BUNGALO_PRICE_MIN = 0;
+
+const FLAT_PRICE_MIN = 1000;
+
+const HOUSE_PRICE_MIN = 5000;
+
+const PALACE_PRICE_MIN = 10000;
+
+const userPriceInput = document.querySelector(`#price`);
+const userTypeOption = document.querySelector(`#type`);
+
+
+userTypeOption.addEventListener(`change`, function () {
+  if (userTypeOption.value === `bungalow`) {
+    userPriceInput.value = BUNGALO_PRICE_MIN;
+  } else if (userTypeOption.value === `flat`) {
+    userPriceInput.value = FLAT_PRICE_MIN;
+  } else if (userTypeOption.value === `house`) {
+    userPriceInput.value = HOUSE_PRICE_MIN;
+  } else if (userTypeOption.value === `palace`) {
+    userPriceInput.value = PALACE_PRICE_MIN;
+  }
+});
 
 const PHOTOS = [
   `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
@@ -185,7 +209,7 @@ const setCard = (adsElement) => {
   // копируем коллекцию
   const cardElement = cardTemplate.cloneNode(true);
 
-  const {title, address, price, type, rooms, guests, checkin, checkout, description, features, photos} = adsElement.offer;
+  const { title, address, price, type, rooms, guests, checkin, checkout, description, features, photos } = adsElement.offer;
 
   const roomsForm = declension([`комната`, `комнаты`, `комнат`], rooms);
 
@@ -313,6 +337,7 @@ const onMapPinClick = function () {
 
 const userTimeIn = document.querySelector(`#timein`);
 const userTimeOut = document.querySelector(`#timeout`);
+
 
 userTimeIn.addEventListener(`change`, function () {
   userTimeOut.value = userTimeIn.value;
