@@ -19,16 +19,20 @@ const PALACE_PRICE_MIN = 10000;
 const userPriceInput = document.querySelector(`#price`);
 const userTypeOption = document.querySelector(`#type`);
 
+const setPriceInputAttrs = function (priseMin) {
+  userPriceInput.min = priseMin;
+  userPriceInput.placeholder = priseMin;
+};
 
 userTypeOption.addEventListener(`change`, function () {
   if (userTypeOption.value === `bungalow`) {
-    userPriceInput.value = BUNGALO_PRICE_MIN;
+    setPriceInputAttrs(BUNGALO_PRICE_MIN);
   } else if (userTypeOption.value === `flat`) {
-    userPriceInput.value = FLAT_PRICE_MIN;
+    setPriceInputAttrs(FLAT_PRICE_MIN);
   } else if (userTypeOption.value === `house`) {
-    userPriceInput.value = HOUSE_PRICE_MIN;
+    setPriceInputAttrs(HOUSE_PRICE_MIN);
   } else if (userTypeOption.value === `palace`) {
-    userPriceInput.value = PALACE_PRICE_MIN;
+    setPriceInputAttrs(PALACE_PRICE_MIN);
   }
 });
 
@@ -209,7 +213,7 @@ const setCard = (adsElement) => {
   // копируем коллекцию
   const cardElement = cardTemplate.cloneNode(true);
 
-  const { title, address, price, type, rooms, guests, checkin, checkout, description, features, photos } = adsElement.offer;
+  const {title, address, price, type, rooms, guests, checkin, checkout, description, features, photos} = adsElement.offer;
 
   const roomsForm = declension([`комната`, `комнаты`, `комнат`], rooms);
 
