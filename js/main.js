@@ -58,6 +58,8 @@ const featuresClasses = {
   conditioner: `popup__feature--conditioner`,
 };
 
+// const buttonCloseCard = document.querySelectorAll(`.popup__close`);
+
 const mapPin = document.querySelector(`.map__pin--main`);
 
 const fields = document.querySelectorAll(`.ad-form fieldset`);
