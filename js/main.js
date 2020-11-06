@@ -8,32 +8,22 @@ const CHECK_IN = [`12:00`, `13:00`, `14:00`];
 
 const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
 
-const BUNGALO_PRICE_MIN = 0;
+const housePrices = {
+  palace: 10000,
+  flat: 1000,
+  house: 5000,
+  bungalo: 0
+};
 
-const FLAT_PRICE_MIN = 1000;
-
-const HOUSE_PRICE_MIN = 5000;
-
-const PALACE_PRICE_MIN = 10000;
+let currentCard = null;
 
 const userPriceInput = document.querySelector(`#price`);
 const userTypeOption = document.querySelector(`#type`);
 
-const setPriceInputAttrs = function (priseMin) {
-  userPriceInput.min = priseMin;
-  userPriceInput.placeholder = priseMin;
-};
 
 userTypeOption.addEventListener(`change`, function () {
-  if (userTypeOption.value === `bungalow`) {
-    setPriceInputAttrs(BUNGALO_PRICE_MIN);
-  } else if (userTypeOption.value === `flat`) {
-    setPriceInputAttrs(FLAT_PRICE_MIN);
-  } else if (userTypeOption.value === `house`) {
-    setPriceInputAttrs(HOUSE_PRICE_MIN);
-  } else if (userTypeOption.value === `palace`) {
-    setPriceInputAttrs(PALACE_PRICE_MIN);
-  }
+  userPriceInput.min = housePrices[userTypeOption.value];
+  userPriceInput.placeholder = housePrices[userTypeOption.value];
 });
 
 const PHOTOS = [
@@ -58,7 +48,35 @@ const featuresClasses = {
   conditioner: `popup__feature--conditioner`,
 };
 
-// const buttonCloseCard = document.querySelectorAll(`.popup__close`);
+const ESC_KEYCODE = 27;
+
+const escPush = {
+  isEscEvent(evt, action) { // ф-я проверки нажатия кнопки esc и действия после нажатия
+    if (evt.keyCode === ESC_KEYCODE) {
+      action();
+    }
+  }
+};
+// const buttonCloseCard = document.querySelector(`.popup__close`);
+
+const onButtonCloseClick = function () { // ф-я закрытия карточки
+  // let mapCard = map.querySelector(`.map__card`);
+  // map.removeChild(mapCard);
+  if (!currentCard) {
+    return;
+  }
+  currentCard.remove();
+  currentCard = null;
+  document.removeEventListener(`keydown`, onCardEscPress);
+};
+
+const onCardEscPress = function (evt) { // ф-я закрытия карточки по нажатию esc
+  escPush.isEscEvent(evt, onButtonCloseClick);
+  document.removeEventListener(`keydown`, onCardEscPress);
+};
+
+// buttonCloseCard.addEventListener(`click`, onButtonCloseClick);
+// document.addEventListener(`keydown`, onCardEscPress);
 
 const mapPin = document.querySelector(`.map__pin--main`);
 
@@ -207,6 +225,11 @@ const setPin = (pin) => {
   img.src = pin.author.avatar;
   img.alt = pin.author.title;
 
+  pinElement.addEventListener(`click`, () => {
+    onButtonCloseClick();
+    renderCardOnMap(pin);
+  });
+
   return pinElement;
 };
 
@@ -236,8 +259,16 @@ const setCard = (adsElement) => {
   cardElement.querySelector(`.popup__description`).textContent = description;
 
   renderFeatures(features, cardElement.querySelector(`.popup__features`));
+
   renderPhotos(photos, cardElement.querySelector(`.popup__photos`));
+
   cardElement.querySelector(`.popup__avatar`).src = adsElement.author.avatar;
+
+  currentCard = cardElement;
+
+  cardElement.querySelector(`.popup__close`).addEventListener(`click`, onButtonCloseClick);
+
+  document.addEventListener(`keydown`, onCardEscPress);
 
   return cardElement;
 };
@@ -333,7 +364,6 @@ const onMapPinClick = function () {
     item.removeAttribute(`disabled`);
   });
 
-  // mapFilters.removeAttribute(`disabled`);
 
   mapFilters.forEach((item) => {
     item.removeAttribute(`disabled`);
