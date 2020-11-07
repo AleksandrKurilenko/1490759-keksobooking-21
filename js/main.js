@@ -16,6 +16,7 @@ const housePrices = {
 };
 
 let currentCard = null;
+let activePin = null;
 
 const userPriceInput = document.querySelector(`#price`);
 const userTypeOption = document.querySelector(`#type`);
@@ -57,13 +58,15 @@ const escPush = {
     }
   }
 };
-// const buttonCloseCard = document.querySelector(`.popup__close`);
+
 
 const onButtonCloseClick = function () { // ф-я закрытия карточки
-  // let mapCard = map.querySelector(`.map__card`);
-  // map.removeChild(mapCard);
   if (!currentCard) {
     return;
+  }
+  if (activePin) {
+    activePin.classList.remove(`map__pin--active`);
+    activePin = null;
   }
   currentCard.remove();
   currentCard = null;
@@ -75,8 +78,6 @@ const onCardEscPress = function (evt) { // ф-я закрытия карточк
   document.removeEventListener(`keydown`, onCardEscPress);
 };
 
-// buttonCloseCard.addEventListener(`click`, onButtonCloseClick);
-// document.addEventListener(`keydown`, onCardEscPress);
 
 const mapPin = document.querySelector(`.map__pin--main`);
 
@@ -228,10 +229,20 @@ const setPin = (pin) => {
   pinElement.addEventListener(`click`, () => {
     onButtonCloseClick();
     renderCardOnMap(pin);
+    activePin = pinElement;
+    activePin.classList.add(`map__pin--active`);
   });
 
   return pinElement;
 };
+
+// const removeActiveMapPin = function (pinElement) {
+//   pinElement.querySelector('.map__pin--active').forEach(function (el) {
+//     el.classList.remove('map__pin--active');
+//   });
+// };
+
+// pinElement.classList.add('map__pin--active');
 
 
 const setCard = (adsElement) => {
@@ -357,7 +368,7 @@ const onMapPinClick = function () {
   setCapacityValue();
   setCapacityDisabled();
   renderPinsOnMap(adsList);
-  renderCardOnMap(adsList[0]);
+  // renderCardOnMap(adsList[0]);
   map.classList.remove(`map--faded`);
   adForm.classList.remove(`ad-form--disabled`);
   fields.forEach((item) => {
