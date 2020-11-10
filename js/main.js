@@ -188,6 +188,8 @@
 
     const pinHeight = pinElement.style.height;
 
+    // TODO: заменить на ф-ю расчёта координат
+
     pinElement.style.left = `${pin.location.x + pinWidth / 2}px`;
     pinElement.style.top = `${pin.location.y + pinHeight}px`;
     const img = pinElement.querySelector(`img`);
