@@ -2,22 +2,22 @@
 
 (() => {
 
-  const PINS_AMOUNT = 8;
+  // const PINS_AMOUNT = 8;
 
   const ESC_KEYCODE = 27;
 
-  const TYPES = [`palace`, `flat`, `house`, `bungalo`];
+  // const TYPES = [`palace`, `flat`, `house`, `bungalo`];
 
-  const CHECK_IN = [`12:00`, `13:00`, `14:00`];
+  // const CHECK_IN = [`12:00`, `13:00`, `14:00`];
 
-  const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
+  // const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
 
 
-  const PHOTOS = [
-    `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
-    `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
-    `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
-  ];
+  // const PHOTOS = [
+  //   `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
+  //   `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
+  //   `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
+  // ];
 
   const typesOfHousing = {
     palace: `Дворец`,
@@ -80,19 +80,19 @@
   };
 
 
-  const getRandomNumbers = (min, max) => {
-    return Math.floor(Math.random() * (max - min)) + min;
-  };
+  // const getRandomNumbers = (min, max) => {
+  //   return Math.floor(Math.random() * (max - min)) + min;
+  // };
 
 
-  const getRandomArray = (array) => {
-    return array[Math.floor(Math.random() * array.length)];
-  };
+  // const getRandomArray = (array) => {
+  //   return array[Math.floor(Math.random() * array.length)];
+  // };
 
 
-  const setLeadingZero = (index) => {
-    return index <= PINS_AMOUNT ? `0${index}` : index;
-  };
+  // const setLeadingZero = (index) => {
+  //   return index <= PINS_AMOUNT ? `0${index}` : index;
+  // };
 
 
   const declension = (forms, number) => {
@@ -101,49 +101,49 @@
   };
 
 
-  const createTemplate = (i) => {
-    const type = getRandomArray(TYPES);
-    const checkin = getRandomArray(CHECK_IN);
-    const checkout = getRandomArray(CHECK_IN);
-    const features = FEATURES.slice(0, getRandomNumbers(0, FEATURES.length));
-    const photos = PHOTOS.slice();
-    const location = {
-      x: getRandomNumbers(40, 1160),
-      y: getRandomNumbers(130, 630)
-    };
-    const index = setLeadingZero(i + 1);
+  // const createTemplate = (i) => {
+  //   const type = getRandomArray(TYPES);
+  //   const checkin = getRandomArray(CHECK_IN);
+  //   const checkout = getRandomArray(CHECK_IN);
+  //   const features = FEATURES.slice(0, getRandomNumbers(0, FEATURES.length));
+  //   const photos = PHOTOS.slice();
+  //   const location = {
+  //     x: getRandomNumbers(40, 1160),
+  //     y: getRandomNumbers(130, 630)
+  //   };
+  //   const index = setLeadingZero(i + 1);
 
-    return {
-      author: {
-        avatar: `img/avatars/user` + index + `.png`
-      },
-      offer: {
-        title: `Заголовок объявления`,
-        address: location.x + `, ` + location.y,
-        price: getRandomNumbers(0, 1000001),
-        type,
-        rooms: getRandomNumbers(1, 99),
-        guests: getRandomNumbers(1, 30),
-        checkin,
-        checkout,
-        features,
-        description: `Описание`,
-        photos
-      },
-      location
-    };
-  };
+  //   return {
+  //     author: {
+  //       avatar: `img/avatars/user` + index + `.png`
+  //     },
+  //     offer: {
+  //       title: `Заголовок объявления`,
+  //       address: location.x + `, ` + location.y,
+  //       price: getRandomNumbers(0, 1000001),
+  //       type,
+  //       rooms: getRandomNumbers(1, 99),
+  //       guests: getRandomNumbers(1, 30),
+  //       checkin,
+  //       checkout,
+  //       features,
+  //       description: `Описание`,
+  //       photos
+  //     },
+  //     location
+  //   };
+  // };
 
 
-  const fillAds = (quantity) => {
-    const adsList = [];
+  // const fillAds = (quantity) => {
+  //   const adsList = [];
 
-    for (let i = 0; i < quantity; i++) {
-      adsList.push(createTemplate(i));
-    }
+  //   for (let i = 0; i < quantity; i++) {
+  //     adsList.push(createTemplate(i));
+  //   }
 
-    return adsList;
-  };
+  //   return adsList;
+  // };
 
   // фотографии
   const renderPhotos = (photos, container) => {
@@ -274,9 +274,22 @@
   };
 
 
-  const onMapPinClick = function () {
+  const onPinsReceived = (response) => {
+    adsList = response;
+  };
 
-    const adsList = fillAds(PINS_AMOUNT);
+
+  const onPinsNotReceived = (statusError) => {
+    window.ErrorsMessage.setErrorsMessage(statusError);
+  };
+
+
+  let adsList = [];
+  window.load.load(onPinsReceived, onPinsNotReceived);
+
+
+  const onMapPinClick = function () {
+    // const adsList = fillAds(PINS_AMOUNT);
     const mainPinLocation = getPinLocation(window.pin.initialMainPinSettings.location, window.pin.initialMainPinSettings.size);
     window.form.setInputValue(addressInput, `${mainPinLocation.x}, ${mainPinLocation.y}`);
     window.form.setCapacityValue();
