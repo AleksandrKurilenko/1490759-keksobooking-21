@@ -3,11 +3,8 @@
 (() => {
 
   const mapPin = document.querySelector(`.map__pin--main`);
-
   const map = document.querySelector(`.map`);
-
   const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
-
   const mapPins = document.querySelector(`.map__pins`);
 
   const initialMainPinSettings = {
@@ -20,7 +17,6 @@
       height: mapPin.offsetHeight
     }
   };
-
 
   window.pin = {
     map,

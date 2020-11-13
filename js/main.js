@@ -3,29 +3,13 @@
 (() => {
 
   // const PINS_AMOUNT = 8;
-
   const ESC_KEYCODE = 27;
-
-  // const TYPES = [`palace`, `flat`, `house`, `bungalo`];
-
-  // const CHECK_IN = [`12:00`, `13:00`, `14:00`];
-
-  // const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
-
-
-  // const PHOTOS = [
-  //   `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
-  //   `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
-  //   `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
-  // ];
-
   const typesOfHousing = {
     palace: `Дворец`,
     flat: `Квартира`,
     house: `Дом`,
     bungalo: `Бунгало`,
   };
-
   const featuresClasses = {
     wifi: `popup__feature--wifi`,
     dishwasher: `popup__feature--dishwasher`,
@@ -34,22 +18,16 @@
     elevator: `popup__feature--elevator`,
     conditioner: `popup__feature--conditioner`,
   };
-
   let currentCard = null;
   let activePin = null;
-
-
+  let adsList = [];
   const fields = document.querySelectorAll(`.ad-form fieldset`);
-
   const mapFilters = document.querySelectorAll(`.map__filters select, .map__filters fieldset`);
-
   // модальное окно с информацией об объявлении
   const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
   // фильтрация объявлений: тип жилья, стоимость, число комнат, число жильцов
   const mapFilterContainer = document.querySelector(`.map__filters-container`);
-
   const addressInput = document.querySelector(`#address`);
-
 
   const escPush = {
     isEscEvent(evt, action) { // ф-я проверки нажатия кнопки esc и действия после нажатия
@@ -58,7 +36,6 @@
       }
     }
   };
-
 
   const onButtonCloseClick = function () { // ф-я закрытия карточки
     if (!currentCard) {
@@ -73,12 +50,10 @@
     document.removeEventListener(`keydown`, onCardEscPress);
   };
 
-
   const onCardEscPress = function (evt) { // ф-я закрытия карточки по нажатию esc
     escPush.isEscEvent(evt, onButtonCloseClick);
     document.removeEventListener(`keydown`, onCardEscPress);
   };
-
 
   // const getRandomNumbers = (min, max) => {
   //   return Math.floor(Math.random() * (max - min)) + min;
@@ -94,12 +69,10 @@
   //   return index <= PINS_AMOUNT ? `0${index}` : index;
   // };
 
-
   const declension = (forms, number) => {
     const cases = [2, 0, 1, 1, 1, 2];
     return forms[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
   };
-
 
   // const createTemplate = (i) => {
   //   const type = getRandomArray(TYPES);
@@ -161,7 +134,6 @@
     container.appendChild(fragment);
   };
 
-
   const renderFeatures = (features, container) => {
     container.innerHTML = ``;
 
@@ -178,7 +150,6 @@
       y: Math.round(location.y + pinSizes.height / 2)
     };
   };
-
 
   const setPin = (pin) => {
 
@@ -205,7 +176,6 @@
 
     return pinElement;
   };
-
 
   const setCard = (adsElement) => {
     // копируем коллекцию
@@ -246,7 +216,6 @@
     return cardElement;
   };
 
-
   const renderPinsOnMap = (pins) => {
     const fragment = document.createDocumentFragment();
     for (let i = 0; i < pins.length; i++) {
@@ -256,11 +225,9 @@
     window.pin.mapPins.appendChild(fragment);
   };
 
-
   const renderCardOnMap = (adsElement) => {
     window.pin.map.insertBefore(setCard(adsElement), mapFilterContainer);
   };
-
 
   const addDisabled = () => {
 
@@ -273,20 +240,16 @@
     });
   };
 
-
   const onPinsReceived = (response) => {
     adsList = response;
   };
 
-
   const onPinsNotReceived = (statusError) => {
-    window.ErrorsMessage.setErrorsMessage(statusError);
+    window.load.setErrorsMessage(statusError);
+    window.load.renderErrorsNode(statusError);
   };
 
-
-  let adsList = [];
   window.load.load(onPinsReceived, onPinsNotReceived);
-
 
   const onMapPinClick = function () {
     // const adsList = fillAds(PINS_AMOUNT);
@@ -302,21 +265,17 @@
       item.removeAttribute(`disabled`);
     });
 
-
     mapFilters.forEach((item) => {
       item.removeAttribute(`disabled`);
     });
     window.pin.mapPin.removeEventListener(`click`, onMapPinClick);
   };
 
-
   window.pin.mapPin.addEventListener(`click`, onMapPinClick);
-
 
   const init = () => {
     addDisabled();
   };
-
 
   init();
 
