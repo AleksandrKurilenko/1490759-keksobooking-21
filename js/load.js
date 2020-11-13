@@ -15,6 +15,7 @@
     OK: 200
   };
 
+
   const sendXhrRequest = (onLoad, onError) => {
     const xhr = new XMLHttpRequest();
     xhr.responseType = `json`;
@@ -61,13 +62,6 @@
     return error;
   };
 
-  const renderErrorsNode = (errorMessage) => {
-    const errorNode = document.createElement(`div`);
-    errorNode.classList.add(`error`, `error-message`);
-    errorNode.textContent = setErrorsMessage(errorMessage);
-    document.body.insertAdjacentElement(`afterbegin`, errorNode);
-  };
-
   const load = (onLoad, onError) => {
     const xhr = sendXhrRequest(onLoad, onError);
     xhr.open(Method.GET, Url.GET);
@@ -84,7 +78,6 @@
     load,
     save,
     setErrorsMessage,
-    renderErrorsNode
   };
 
 })();

@@ -2,7 +2,6 @@
 
 (() => {
 
-  // const PINS_AMOUNT = 8;
   const ESC_KEYCODE = 27;
   const typesOfHousing = {
     palace: `Дворец`,
@@ -23,11 +22,10 @@
   let adsList = [];
   const fields = document.querySelectorAll(`.ad-form fieldset`);
   const mapFilters = document.querySelectorAll(`.map__filters select, .map__filters fieldset`);
-  // модальное окно с информацией об объявлении
   const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
-  // фильтрация объявлений: тип жилья, стоимость, число комнат, число жильцов
   const mapFilterContainer = document.querySelector(`.map__filters-container`);
   const addressInput = document.querySelector(`#address`);
+  const errorTemplate = document.querySelector(`#error`).content.querySelector(`.error`);
 
   const escPush = {
     isEscEvent(evt, action) { // ф-я проверки нажатия кнопки esc и действия после нажатия
@@ -55,70 +53,11 @@
     document.removeEventListener(`keydown`, onCardEscPress);
   };
 
-  // const getRandomNumbers = (min, max) => {
-  //   return Math.floor(Math.random() * (max - min)) + min;
-  // };
-
-
-  // const getRandomArray = (array) => {
-  //   return array[Math.floor(Math.random() * array.length)];
-  // };
-
-
-  // const setLeadingZero = (index) => {
-  //   return index <= PINS_AMOUNT ? `0${index}` : index;
-  // };
-
   const declension = (forms, number) => {
     const cases = [2, 0, 1, 1, 1, 2];
     return forms[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
   };
 
-  // const createTemplate = (i) => {
-  //   const type = getRandomArray(TYPES);
-  //   const checkin = getRandomArray(CHECK_IN);
-  //   const checkout = getRandomArray(CHECK_IN);
-  //   const features = FEATURES.slice(0, getRandomNumbers(0, FEATURES.length));
-  //   const photos = PHOTOS.slice();
-  //   const location = {
-  //     x: getRandomNumbers(40, 1160),
-  //     y: getRandomNumbers(130, 630)
-  //   };
-  //   const index = setLeadingZero(i + 1);
-
-  //   return {
-  //     author: {
-  //       avatar: `img/avatars/user` + index + `.png`
-  //     },
-  //     offer: {
-  //       title: `Заголовок объявления`,
-  //       address: location.x + `, ` + location.y,
-  //       price: getRandomNumbers(0, 1000001),
-  //       type,
-  //       rooms: getRandomNumbers(1, 99),
-  //       guests: getRandomNumbers(1, 30),
-  //       checkin,
-  //       checkout,
-  //       features,
-  //       description: `Описание`,
-  //       photos
-  //     },
-  //     location
-  //   };
-  // };
-
-
-  // const fillAds = (quantity) => {
-  //   const adsList = [];
-
-  //   for (let i = 0; i < quantity; i++) {
-  //     adsList.push(createTemplate(i));
-  //   }
-
-  //   return adsList;
-  // };
-
-  // фотографии
   const renderPhotos = (photos, container) => {
     const fragment = document.createDocumentFragment();
     const photoTemplate = container.querySelector(`.popup__photo`);
@@ -178,7 +117,6 @@
   };
 
   const setCard = (adsElement) => {
-    // копируем коллекцию
     const cardElement = cardTemplate.cloneNode(true);
 
     const {title, address, price, type, rooms, guests, checkin, checkout, description, features, photos} = adsElement.offer;
@@ -186,7 +124,7 @@
     const roomsForm = declension([`комната`, `комнаты`, `комнат`], rooms);
 
     const guestsForm = declension([`гостя`, `гостей`, `гостей`], guests);
-    // выводим данные в модальное окно
+
     cardElement.querySelector(`.popup__title`).textContent = title;
 
     cardElement.querySelector(`.popup__text--address`).textContent = address;
@@ -240,25 +178,29 @@
     });
   };
 
+  const onLoadError = (errorMessage) => {
+    const errorElement = errorTemplate.cloneNode(true);
+    const errorText = errorElement.querySelector(`.error__message`);
+    errorText.textContent = window.load.setErrorsMessage(errorMessage);
+    document.body.appendChild(errorElement);
+    errorElement.addEventListener(`click`, () => {
+      errorElement.remove();
+      window.load.load(onPinsReceived, onLoadError);
+    });
+  };
+
   const onPinsReceived = (response) => {
     adsList = response;
   };
 
-  const onPinsNotReceived = (statusError) => {
-    window.load.setErrorsMessage(statusError);
-    window.load.renderErrorsNode(statusError);
-  };
-
-  window.load.load(onPinsReceived, onPinsNotReceived);
+  window.load.load(onPinsReceived, onLoadError);
 
   const onMapPinClick = function () {
-    // const adsList = fillAds(PINS_AMOUNT);
     const mainPinLocation = getPinLocation(window.pin.initialMainPinSettings.location, window.pin.initialMainPinSettings.size);
     window.form.setInputValue(addressInput, `${mainPinLocation.x}, ${mainPinLocation.y}`);
     window.form.setCapacityValue();
     window.form.setCapacityDisabled();
     renderPinsOnMap(adsList);
-    // renderCardOnMap(adsList[0]);
     window.pin.map.classList.remove(`map--faded`);
     window.form.adForm.classList.remove(`ad-form--disabled`);
     fields.forEach((item) => {
