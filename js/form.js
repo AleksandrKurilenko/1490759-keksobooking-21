@@ -3,22 +3,16 @@
 (() => {
 
   const adForm = document.querySelector(`.ad-form`);
-
   const userTimeIn = document.querySelector(`#timein`);
-
   const userTimeOut = document.querySelector(`#timeout`);
-
   const userPriceInput = document.querySelector(`#price`);
-
   const userTypeOption = document.querySelector(`#type`);
-
   const housePrices = {
     palace: 10000,
     flat: 1000,
     house: 5000,
     bungalo: 0
   };
-
 
   const setValidation = () => {
     if (parseInt(adForm.rooms.value, 10) === 100 && parseInt(adForm.capacity.value, 10) > 0) {
@@ -32,7 +26,6 @@
     }
   };
 
-
   userTimeIn.addEventListener(`change`, function () {
     userTimeOut.value = userTimeIn.value;
   });
@@ -41,12 +34,10 @@
     userTimeIn.value = userTimeOut.value;
   });
 
-
   userTypeOption.addEventListener(`change`, function () {
     userPriceInput.min = housePrices[userTypeOption.value];
     userPriceInput.placeholder = housePrices[userTypeOption.value];
   });
-
 
   const setCapacityDisabled = () => {
     const roomValue = parseInt(window.form.adForm.rooms.value, 10);
@@ -88,7 +79,6 @@
   adForm.rooms.addEventListener(`change`, roomsChange);
 
   adForm.querySelector(`.ad-form__submit`).addEventListener(`click`, onAdFormClick);
-
 
   window.form = {
     adForm,

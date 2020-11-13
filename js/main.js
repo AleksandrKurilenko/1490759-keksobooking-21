@@ -2,30 +2,13 @@
 
 (() => {
 
-  const PINS_AMOUNT = 8;
-
   const ESC_KEYCODE = 27;
-
-  const TYPES = [`palace`, `flat`, `house`, `bungalo`];
-
-  const CHECK_IN = [`12:00`, `13:00`, `14:00`];
-
-  const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
-
-
-  const PHOTOS = [
-    `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
-    `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
-    `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
-  ];
-
   const typesOfHousing = {
     palace: `Дворец`,
     flat: `Квартира`,
     house: `Дом`,
     bungalo: `Бунгало`,
   };
-
   const featuresClasses = {
     wifi: `popup__feature--wifi`,
     dishwasher: `popup__feature--dishwasher`,
@@ -34,22 +17,15 @@
     elevator: `popup__feature--elevator`,
     conditioner: `popup__feature--conditioner`,
   };
-
   let currentCard = null;
   let activePin = null;
-
-
+  let adsList = [];
   const fields = document.querySelectorAll(`.ad-form fieldset`);
-
   const mapFilters = document.querySelectorAll(`.map__filters select, .map__filters fieldset`);
-
-  // модальное окно с информацией об объявлении
   const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
-  // фильтрация объявлений: тип жилья, стоимость, число комнат, число жильцов
   const mapFilterContainer = document.querySelector(`.map__filters-container`);
-
   const addressInput = document.querySelector(`#address`);
-
+  const errorTemplate = document.querySelector(`#error`).content.querySelector(`.error`);
 
   const escPush = {
     isEscEvent(evt, action) { // ф-я проверки нажатия кнопки esc и действия после нажатия
@@ -58,7 +34,6 @@
       }
     }
   };
-
 
   const onButtonCloseClick = function () { // ф-я закрытия карточки
     if (!currentCard) {
@@ -73,79 +48,16 @@
     document.removeEventListener(`keydown`, onCardEscPress);
   };
 
-
   const onCardEscPress = function (evt) { // ф-я закрытия карточки по нажатию esc
     escPush.isEscEvent(evt, onButtonCloseClick);
     document.removeEventListener(`keydown`, onCardEscPress);
   };
-
-
-  const getRandomNumbers = (min, max) => {
-    return Math.floor(Math.random() * (max - min)) + min;
-  };
-
-
-  const getRandomArray = (array) => {
-    return array[Math.floor(Math.random() * array.length)];
-  };
-
-
-  const setLeadingZero = (index) => {
-    return index <= PINS_AMOUNT ? `0${index}` : index;
-  };
-
 
   const declension = (forms, number) => {
     const cases = [2, 0, 1, 1, 1, 2];
     return forms[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
   };
 
-
-  const createTemplate = (i) => {
-    const type = getRandomArray(TYPES);
-    const checkin = getRandomArray(CHECK_IN);
-    const checkout = getRandomArray(CHECK_IN);
-    const features = FEATURES.slice(0, getRandomNumbers(0, FEATURES.length));
-    const photos = PHOTOS.slice();
-    const location = {
-      x: getRandomNumbers(40, 1160),
-      y: getRandomNumbers(130, 630)
-    };
-    const index = setLeadingZero(i + 1);
-
-    return {
-      author: {
-        avatar: `img/avatars/user` + index + `.png`
-      },
-      offer: {
-        title: `Заголовок объявления`,
-        address: location.x + `, ` + location.y,
-        price: getRandomNumbers(0, 1000001),
-        type,
-        rooms: getRandomNumbers(1, 99),
-        guests: getRandomNumbers(1, 30),
-        checkin,
-        checkout,
-        features,
-        description: `Описание`,
-        photos
-      },
-      location
-    };
-  };
-
-
-  const fillAds = (quantity) => {
-    const adsList = [];
-
-    for (let i = 0; i < quantity; i++) {
-      adsList.push(createTemplate(i));
-    }
-
-    return adsList;
-  };
-
-  // фотографии
   const renderPhotos = (photos, container) => {
     const fragment = document.createDocumentFragment();
     const photoTemplate = container.querySelector(`.popup__photo`);
@@ -160,7 +72,6 @@
 
     container.appendChild(fragment);
   };
-
 
   const renderFeatures = (features, container) => {
     container.innerHTML = ``;
@@ -178,7 +89,6 @@
       y: Math.round(location.y + pinSizes.height / 2)
     };
   };
-
 
   const setPin = (pin) => {
 
@@ -206,9 +116,7 @@
     return pinElement;
   };
 
-
   const setCard = (adsElement) => {
-    // копируем коллекцию
     const cardElement = cardTemplate.cloneNode(true);
 
     const {title, address, price, type, rooms, guests, checkin, checkout, description, features, photos} = adsElement.offer;
@@ -216,7 +124,7 @@
     const roomsForm = declension([`комната`, `комнаты`, `комнат`], rooms);
 
     const guestsForm = declension([`гостя`, `гостей`, `гостей`], guests);
-    // выводим данные в модальное окно
+
     cardElement.querySelector(`.popup__title`).textContent = title;
 
     cardElement.querySelector(`.popup__text--address`).textContent = address;
@@ -246,7 +154,6 @@
     return cardElement;
   };
 
-
   const renderPinsOnMap = (pins) => {
     const fragment = document.createDocumentFragment();
     for (let i = 0; i < pins.length; i++) {
@@ -256,11 +163,9 @@
     window.pin.mapPins.appendChild(fragment);
   };
 
-
   const renderCardOnMap = (adsElement) => {
     window.pin.map.insertBefore(setCard(adsElement), mapFilterContainer);
   };
-
 
   const addDisabled = () => {
 
@@ -273,22 +178,34 @@
     });
   };
 
+  const onLoadError = (errorMessage) => {
+    const errorElement = errorTemplate.cloneNode(true);
+    const errorText = errorElement.querySelector(`.error__message`);
+    errorText.textContent = window.load.setErrorsMessage(errorMessage);
+    document.body.appendChild(errorElement);
+    errorElement.addEventListener(`click`, () => {
+      errorElement.remove();
+      window.load.load(onPinsReceived, onLoadError);
+    });
+  };
+
+  const onPinsReceived = (response) => {
+    adsList = response;
+  };
+
+  window.load.load(onPinsReceived, onLoadError);
 
   const onMapPinClick = function () {
-
-    const adsList = fillAds(PINS_AMOUNT);
     const mainPinLocation = getPinLocation(window.pin.initialMainPinSettings.location, window.pin.initialMainPinSettings.size);
     window.form.setInputValue(addressInput, `${mainPinLocation.x}, ${mainPinLocation.y}`);
     window.form.setCapacityValue();
     window.form.setCapacityDisabled();
     renderPinsOnMap(adsList);
-    // renderCardOnMap(adsList[0]);
     window.pin.map.classList.remove(`map--faded`);
     window.form.adForm.classList.remove(`ad-form--disabled`);
     fields.forEach((item) => {
       item.removeAttribute(`disabled`);
     });
-
 
     mapFilters.forEach((item) => {
       item.removeAttribute(`disabled`);
@@ -296,14 +213,11 @@
     window.pin.mapPin.removeEventListener(`click`, onMapPinClick);
   };
 
-
   window.pin.mapPin.addEventListener(`click`, onMapPinClick);
-
 
   const init = () => {
     addDisabled();
   };
-
 
   init();
 
