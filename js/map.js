@@ -2,18 +2,19 @@
 
 (() => {
 
-  const Constants = {
-    MAIN_PIN_HEIGHT: 17,
-    MAIN_PIN_WIDTH: 33,
-    RIGHT_X_POS: 1200,
-    LEFT_X_POS: 0,
-    TOP_Y_POS: 130,
-    BOTTOM_Y_POS: 630
+  const MainPin = {
+    HEIGHT: 17,
+    WIDTH: 33,
+    RIGHT_X: 1200,
+    LEFT_X: 0,
+    TOP_Y: 130,
+    BOTTOM_Y: 630
   };
 
   const map = document.querySelector(`.map`);
   const adForm = document.querySelector(`.ad-form`);
   const addressInput = adForm.querySelector(`[name="address"]`);
+  const mapPin = document.querySelector(`.map__pin--main`);
   let isFirsRender = true;
   let dragged = true;
 
@@ -25,7 +26,7 @@
   };
 
   // код перемещения метки по карте
-  window.pin.mapPin.addEventListener(`mousedown`, function (evt) {
+  mapPin.addEventListener(`mousedown`, function (evt) {
     evt.preventDefault();
     dragged = false;
     const moveOfSet = {
@@ -35,17 +36,17 @@
 
     const onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
-      const posX = Math.max(Math.min(moveEvt.pageX - moveOfSet.left, Constants.RIGHT_X_POS), Constants.LEFT_X_POS);
-      const posY = Math.max(Math.min(moveEvt.pageY - moveOfSet.top, Constants.BOTTOM_Y_POS), Constants.TOP_Y_POS);
-      window.pin.mapPin.style.left = `${posX - window.pin.mapPin.offsetWidth / 2}px`;
-      window.pin.mapPin.style.top = `${posY - window.pin.mapPin.offsetHeight - Constants.MAIN_PIN_HEIGHT}px`;
+      const posX = Math.max(Math.min(moveEvt.pageX - moveOfSet.left, MainPin.RIGHT_X), MainPin.LEFT_X);
+      const posY = Math.max(Math.min(moveEvt.pageY - moveOfSet.top, MainPin.BOTTOM_Y), MainPin.TOP_Y);
+      mapPin.style.left = `${posX - mapPin.offsetWidth / 2}px`;
+      mapPin.style.top = `${posY - mapPin.offsetHeight - MainPin.HEIGHT}px`;
       dragged = true;
-      let posPin = getPositionOffSetElem(window.pin.mapPin); // координаты метки
+      let posPin = getPositionOffSetElem(mapPin); // координаты метки
       addressInput.placeholder = posPin.x + `,` + posPin.y;
       // координата острого конца указателя по x
-      const coordPinX = (posPin.x + window.pin.mapPin.offsetWidth - Constants.MAIN_PIN_WIDTH);
+      const coordPinX = (posPin.x + mapPin.offsetWidth - MainPin.WIDTH);
       // координата острого конца указателя по y
-      const coordPinY = (posPin.y + window.pin.mapPin.offsetHeight + Constants.MAIN_PIN_HEIGHT);
+      const coordPinY = (posPin.y + mapPin.offsetHeight + MainPin.HEIGHT);
       //  координаты с поправкой на указатель в поле
       addressInput.removeAttribute(`placeholder`);
       addressInput.value = coordPinX + `,` + coordPinY;
@@ -67,8 +68,9 @@
     document.addEventListener(`mouseup`, onMouseUp);
   });
 
-  window.form = {
-    constants: Constants
+  window.map = {
+    constants: MainPin,
+    mapPin
   };
 
 })();

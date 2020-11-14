@@ -4,7 +4,7 @@
 
   const TIMEOUT_IN_MS = 10000;
   const Url = {
-    POST: `https://21.javascript.pages.academy/keksobooking`,
+    POST: `https://21.javascript.pages.academy/keksobooking2`,
     GET: `https://21.javascript.pages.academy/keksobooking/data`,
   };
   const Method = {

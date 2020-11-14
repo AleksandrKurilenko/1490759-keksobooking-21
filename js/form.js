@@ -1,12 +1,13 @@
 "use strict";
 
 (() => {
-
+  const ESC_KEYCODE = 27;
   const adForm = document.querySelector(`.ad-form`);
   const userTimeIn = document.querySelector(`#timein`);
   const userTimeOut = document.querySelector(`#timeout`);
   const userPriceInput = document.querySelector(`#price`);
   const userTypeOption = document.querySelector(`#type`);
+  const successTemplate = document.querySelector(`#success`).content.querySelector(`.success`);
   const housePrices = {
     palace: 10000,
     flat: 1000,
@@ -73,6 +74,47 @@
   const onAdFormClick = () => {
     setValidation();
   };
+
+  const errorEvent = (successMessage) => {
+    const successElement = successTemplate.cloneNode(true);
+    const successText = successElement.querySelector(`.success__message`);
+    successText.textContent = window.load.setErrorsMessage(successMessage);
+    document.body.appendChild(successElement);
+    successElement.addEventListener(`click`, () => {
+      successElement.remove();
+    });
+  };
+
+  const setSuccessMessage = () => {
+    const successElement = successTemplate.cloneNode(true);
+    document.body.appendChild(successElement);
+
+    const onEscKey = (evt) => {
+      evt.preventDefault();
+
+      if (evt.keyCode === ESC_KEYCODE) {
+        document.querySelector(`.success`).remove();
+        document.removeEventListener(`keydown`, onEscKey);
+      }
+    };
+
+    const onClick = (evt) => {
+      evt.preventDefault();
+      document.querySelector(`.success`).remove();
+      document.removeEventListener(`click`, onClick);
+    };
+
+    document.addEventListener(`keydown`, onEscKey);
+    document.addEventListener(`click`, onClick);
+
+  };
+
+  const onSubmitForm = (evt) => {
+    evt.preventDefault();
+    window.load.save(setSuccessMessage, errorEvent, new FormData(adForm));
+  };
+
+  adForm.addEventListener(`submit`, onSubmitForm);
 
   adForm.capacity.addEventListener(`change`, capacityChange);
 
