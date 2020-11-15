@@ -3,12 +3,14 @@
 (() => {
 
   const ESC_KEYCODE = 27;
+  const HEIGHT_INDENT = 22;
   const typesOfHousing = {
     palace: `Дворец`,
     flat: `Квартира`,
     house: `Дом`,
     bungalo: `Бунгало`,
   };
+
   const featuresClasses = {
     wifi: `popup__feature--wifi`,
     dishwasher: `popup__feature--dishwasher`,
@@ -26,6 +28,11 @@
   const mapFilterContainer = document.querySelector(`.map__filters-container`);
   const addressInput = document.querySelector(`#address`);
   const errorTemplate = document.querySelector(`#error`).content.querySelector(`.error`);
+  const mapPin = document.querySelector(`.map__pin--main`);
+  const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+  const map = document.querySelector(`.map`);
+  const mapPins = document.querySelector(`.map__pins`);
+
 
   const escPush = {
     isEscEvent(evt, action) { // ф-я проверки нажатия кнопки esc и действия после нажатия
@@ -83,23 +90,33 @@
     });
   };
 
-  const getPinLocation = (location, pinSizes) => {
-    return {
-      x: Math.round(location.x + pinSizes.width / 2),
-      y: Math.round(location.y + pinSizes.height / 2)
+  const getPinLocation = () => {
+    const location = {
+      x: mapPin.offsetLeft,
+      y: mapPin.offsetTop,
     };
+    const size = {
+      width: mapPin.offsetWidth,
+      height: mapPin.offsetHeight
+    };
+
+    if (map.classList.contains(`map--faded`)) {
+      return {
+        x: Math.round(location.x + size.width / 2),
+        y: Math.round(location.y + size.height / 2)
+      };
+    } else {
+      return {
+        x: Math.round(location.x + size.width / 2),
+        y: Math.round(location.y + size.height + HEIGHT_INDENT)
+      };
+    }
   };
 
   const setPin = (pin) => {
-
-    const pinElement = window.pin.pinTemplate.cloneNode(true);
-
+    const pinElement = pinTemplate.cloneNode(true);
     const pinWidth = pinElement.style.width;
-
     const pinHeight = pinElement.style.height;
-
-    // TODO: заменить на ф-ю расчёта координат
-
     pinElement.style.left = `${pin.location.x + pinWidth / 2}px`;
     pinElement.style.top = `${pin.location.y + pinHeight}px`;
     const img = pinElement.querySelector(`img`);
@@ -118,39 +135,22 @@
 
   const setCard = (adsElement) => {
     const cardElement = cardTemplate.cloneNode(true);
-
     const {title, address, price, type, rooms, guests, checkin, checkout, description, features, photos} = adsElement.offer;
-
     const roomsForm = declension([`комната`, `комнаты`, `комнат`], rooms);
-
     const guestsForm = declension([`гостя`, `гостей`, `гостей`], guests);
-
     cardElement.querySelector(`.popup__title`).textContent = title;
-
     cardElement.querySelector(`.popup__text--address`).textContent = address;
-
     cardElement.querySelector(`.popup__text--price`).firstChild.textContent = `${price}\u20BD`;
-
     cardElement.querySelector(`.popup__type`).textContent = typesOfHousing[type];
-
     cardElement.querySelector(`.popup__text--capacity`).textContent = `${rooms} ${roomsForm} для ${guests} ${guestsForm}`;
-
     cardElement.querySelector(`.popup__text--time`).textContent = `Заезд после ${checkin} выезд до ${checkout}`;
-
     cardElement.querySelector(`.popup__description`).textContent = description;
-
     renderFeatures(features, cardElement.querySelector(`.popup__features`));
-
     renderPhotos(photos, cardElement.querySelector(`.popup__photos`));
-
     cardElement.querySelector(`.popup__avatar`).src = adsElement.author.avatar;
-
     currentCard = cardElement;
-
     cardElement.querySelector(`.popup__close`).addEventListener(`click`, onButtonCloseClick);
-
     document.addEventListener(`keydown`, onCardEscPress);
-
     return cardElement;
   };
 
@@ -159,12 +159,11 @@
     for (let i = 0; i < pins.length; i++) {
       fragment.appendChild(setPin(pins[i]));
     }
-
-    window.pin.mapPins.appendChild(fragment);
+    mapPins.appendChild(fragment);
   };
 
   const renderCardOnMap = (adsElement) => {
-    window.pin.map.insertBefore(setCard(adsElement), mapFilterContainer);
+    map.insertBefore(setCard(adsElement), mapFilterContainer);
   };
 
   const addDisabled = () => {
@@ -196,13 +195,13 @@
   window.load.load(onPinsReceived, onLoadError);
 
   const onMapPinClick = function () {
-    const mainPinLocation = getPinLocation(window.pin.initialMainPinSettings.location, window.pin.initialMainPinSettings.size);
-    window.form.setInputValue(addressInput, `${mainPinLocation.x}, ${mainPinLocation.y}`);
+    map.classList.remove(`map--faded`);
+    window.form.adForm.classList.remove(`ad-form--disabled`);
     window.form.setCapacityValue();
     window.form.setCapacityDisabled();
     renderPinsOnMap(adsList);
-    window.pin.map.classList.remove(`map--faded`);
-    window.form.adForm.classList.remove(`ad-form--disabled`);
+    const mainPinLocation = getPinLocation();
+    window.form.setInputValue(addressInput, `${mainPinLocation.x}, ${mainPinLocation.y}`);
     fields.forEach((item) => {
       item.removeAttribute(`disabled`);
     });
@@ -210,15 +209,20 @@
     mapFilters.forEach((item) => {
       item.removeAttribute(`disabled`);
     });
-    window.pin.mapPin.removeEventListener(`click`, onMapPinClick);
+    mapPin.removeEventListener(`click`, onMapPinClick);
   };
 
-  window.pin.mapPin.addEventListener(`click`, onMapPinClick);
+  mapPin.addEventListener(`click`, onMapPinClick);
 
   const init = () => {
     addDisabled();
   };
 
   init();
+
+  window.main = {
+    mapPin,
+    onMapPinClick
+  };
 
 })();

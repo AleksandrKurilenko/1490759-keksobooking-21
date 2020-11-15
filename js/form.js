@@ -1,12 +1,15 @@
 "use strict";
 
 (() => {
-
+  const ESC_KEYCODE = 27;
   const adForm = document.querySelector(`.ad-form`);
+  const map = document.querySelector(`.map`);
   const userTimeIn = document.querySelector(`#timein`);
   const userTimeOut = document.querySelector(`#timeout`);
   const userPriceInput = document.querySelector(`#price`);
   const userTypeOption = document.querySelector(`#type`);
+  const successTemplate = document.querySelector(`#success`).content.querySelector(`.success`);
+  // const pins = [];
   const housePrices = {
     palace: 10000,
     flat: 1000,
@@ -73,6 +76,72 @@
   const onAdFormClick = () => {
     setValidation();
   };
+
+  const errorEvent = (successMessage) => {
+    const successElement = successTemplate.cloneNode(true);
+    const successText = successElement.querySelector(`.success__message`);
+    successText.textContent = window.load.setErrorsMessage(successMessage);
+    document.body.appendChild(successElement);
+    successElement.addEventListener(`click`, () => {
+      successElement.remove();
+    });
+  };
+
+  const setSuccessMessage = () => {
+    const successElement = successTemplate.cloneNode(true);
+    document.body.appendChild(successElement);
+
+    const clearAll = () => {
+      if (document.querySelector(`.success`)) {
+        document.querySelector(`.success`).remove();
+      }
+
+      document.removeEventListener(`keydown`, onEscKey);
+      adForm.classList.add(`ad-form--disabled`);
+      map.classList.add(`map--faded`);
+      adForm.reset();
+      const allPins = document.querySelectorAll(`.map__pin`);
+      const pins = [...allPins].slice(1);
+
+      pins.forEach((item) => {
+        item.remove();
+      });
+      window.main.mapPin.addEventListener(`click`, window.main.onMapPinClick);
+      document.removeEventListener(`keydown`, onEscKey);
+      document.removeEventListener(`click`, onClick);
+    };
+    const onEscKey = (evt) => {
+      evt.preventDefault();
+
+      if (evt.keyCode === ESC_KEYCODE) {
+        clearAll();
+      }
+    };
+
+    const onClick = (evt) => {
+      evt.preventDefault();
+      clearAll();
+    };
+
+    document.addEventListener(`keydown`, onEscKey);
+    document.addEventListener(`click`, onClick);
+
+  };
+
+  const onSubmitForm = (evt) => {
+    evt.preventDefault();
+    window.load.save(setSuccessMessage, errorEvent, new FormData(adForm));
+  };
+
+  // const deletePins = () => {
+  //   if (pins.length > 0) {
+  //     pins.forEach((item) => {
+  //       item.remove();
+  //     });
+  //   }
+  // };
+
+  adForm.addEventListener(`submit`, onSubmitForm);
 
   adForm.capacity.addEventListener(`change`, capacityChange);
 
