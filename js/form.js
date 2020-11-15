@@ -3,11 +3,13 @@
 (() => {
   const ESC_KEYCODE = 27;
   const adForm = document.querySelector(`.ad-form`);
+  const map = document.querySelector(`.map`);
   const userTimeIn = document.querySelector(`#timein`);
   const userTimeOut = document.querySelector(`#timeout`);
   const userPriceInput = document.querySelector(`#price`);
   const userTypeOption = document.querySelector(`#type`);
   const successTemplate = document.querySelector(`#success`).content.querySelector(`.success`);
+  // const pins = [];
   const housePrices = {
     palace: 10000,
     flat: 1000,
@@ -95,6 +97,10 @@
       if (evt.keyCode === ESC_KEYCODE) {
         document.querySelector(`.success`).remove();
         document.removeEventListener(`keydown`, onEscKey);
+        adForm.classList.add(`ad-form--disabled`);
+        map.classList.add(`map--faded`);
+        adForm.reset();
+        // deletePins();
       }
     };
 
@@ -102,6 +108,10 @@
       evt.preventDefault();
       document.querySelector(`.success`).remove();
       document.removeEventListener(`click`, onClick);
+      adForm.classList.add(`ad-form--disabled`);
+      map.classList.add(`map--faded`);
+      adForm.reset();
+      // deletePins();
     };
 
     document.addEventListener(`keydown`, onEscKey);
@@ -113,6 +123,14 @@
     evt.preventDefault();
     window.load.save(setSuccessMessage, errorEvent, new FormData(adForm));
   };
+
+  // const deletePins = () => {
+  //   if (pins.length > 0) {
+  //     pins.forEach((item) => {
+  //       item.remove();
+  //     });
+  //   }
+  // };
 
   adForm.addEventListener(`submit`, onSubmitForm);
 
