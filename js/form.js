@@ -107,6 +107,8 @@
         item.remove();
       });
       window.main.mapPin.addEventListener(`click`, window.main.onMapPinClick);
+      document.removeEventListener(`keydown`, onEscKey);
+      document.removeEventListener(`click`, onClick);
     };
     const onEscKey = (evt) => {
       evt.preventDefault();

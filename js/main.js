@@ -195,7 +195,6 @@
   window.load.load(onPinsReceived, onLoadError);
 
   const onMapPinClick = function () {
-    console.log(`ОТРАБОТАЛ КЛИК`, map);
     map.classList.remove(`map--faded`);
     window.form.adForm.classList.remove(`ad-form--disabled`);
     window.form.setCapacityValue();
