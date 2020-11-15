@@ -91,27 +91,34 @@
     const successElement = successTemplate.cloneNode(true);
     document.body.appendChild(successElement);
 
+    const clearAll = () => {
+      if (document.querySelector(`.success`)) {
+        document.querySelector(`.success`).remove();
+      }
+
+      document.removeEventListener(`keydown`, onEscKey);
+      adForm.classList.add(`ad-form--disabled`);
+      map.classList.add(`map--faded`);
+      adForm.reset();
+      const allPins = document.querySelectorAll(`.map__pin`);
+      const pins = [...allPins].slice(1);
+
+      pins.forEach((item) => {
+        item.remove();
+      });
+      window.main.mapPin.addEventListener(`click`, window.main.onMapPinClick);
+    };
     const onEscKey = (evt) => {
       evt.preventDefault();
 
       if (evt.keyCode === ESC_KEYCODE) {
-        document.querySelector(`.success`).remove();
-        document.removeEventListener(`keydown`, onEscKey);
-        adForm.classList.add(`ad-form--disabled`);
-        map.classList.add(`map--faded`);
-        adForm.reset();
-        // deletePins();
+        clearAll();
       }
     };
 
     const onClick = (evt) => {
       evt.preventDefault();
-      document.querySelector(`.success`).remove();
-      document.removeEventListener(`click`, onClick);
-      adForm.classList.add(`ad-form--disabled`);
-      map.classList.add(`map--faded`);
-      adForm.reset();
-      // deletePins();
+      clearAll();
     };
 
     document.addEventListener(`keydown`, onEscKey);

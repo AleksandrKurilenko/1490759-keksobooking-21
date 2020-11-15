@@ -195,11 +195,12 @@
   window.load.load(onPinsReceived, onLoadError);
 
   const onMapPinClick = function () {
+    console.log(`ОТРАБОТАЛ КЛИК`, map);
+    map.classList.remove(`map--faded`);
+    window.form.adForm.classList.remove(`ad-form--disabled`);
     window.form.setCapacityValue();
     window.form.setCapacityDisabled();
     renderPinsOnMap(adsList);
-    map.classList.remove(`map--faded`);
-    window.form.adForm.classList.remove(`ad-form--disabled`);
     const mainPinLocation = getPinLocation();
     window.form.setInputValue(addressInput, `${mainPinLocation.x}, ${mainPinLocation.y}`);
     fields.forEach((item) => {
@@ -219,5 +220,10 @@
   };
 
   init();
+
+  window.main = {
+    mapPin,
+    onMapPinClick
+  };
 
 })();
