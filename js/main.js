@@ -5,6 +5,19 @@
   const ESC_KEYCODE = 27;
   const HEIGHT_INDENT = 22;
   const PINS_LIMIT = 5;
+  const fields = document.querySelectorAll(`.ad-form fieldset`);
+  const mapFilters = document.querySelectorAll(`.map__filters select, .map__filters fieldset`);
+  const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
+  const mapFilterContainer = document.querySelector(`.map__filters-container`);
+  const addressInput = document.querySelector(`#address`);
+  const errorTemplate = document.querySelector(`#error`).content.querySelector(`.error`);
+  const mapPin = document.querySelector(`.map__pin--main`);
+  const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+  const map = document.querySelector(`.map`);
+  const mapPins = document.querySelector(`.map__pins`);
+  let currentCard = null;
+  let activePin = null;
+  let adsList = [];
   const typesOfHousing = {
     palace: `Дворец`,
     flat: `Квартира`,
@@ -20,20 +33,6 @@
     elevator: `popup__feature--elevator`,
     conditioner: `popup__feature--conditioner`,
   };
-  let currentCard = null;
-  let activePin = null;
-  let adsList = [];
-  const fields = document.querySelectorAll(`.ad-form fieldset`);
-  const mapFilters = document.querySelectorAll(`.map__filters select, .map__filters fieldset`);
-  const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
-  const mapFilterContainer = document.querySelector(`.map__filters-container`);
-  const addressInput = document.querySelector(`#address`);
-  const errorTemplate = document.querySelector(`#error`).content.querySelector(`.error`);
-  const mapPin = document.querySelector(`.map__pin--main`);
-  const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
-  const map = document.querySelector(`.map`);
-  const mapPins = document.querySelector(`.map__pins`);
-
 
   const escPush = {
     isEscEvent(evt, action) { // ф-я проверки нажатия кнопки esc и действия после нажатия
@@ -100,7 +99,6 @@
       width: mapPin.offsetWidth,
       height: mapPin.offsetHeight
     };
-
     if (map.classList.contains(`map--faded`)) {
       return {
         x: Math.round(location.x + size.width / 2),
@@ -197,14 +195,12 @@
 
   const myData = () => adsList;
 
-  const onMapPinClick = function () {
+  const onMapPinClick = () => {
     map.classList.remove(`map--faded`);
     window.form.adForm.classList.remove(`ad-form--disabled`);
     window.form.setCapacityValue();
     window.form.setCapacityDisabled();
     renderPinsOnMap(adsList.slice(0, PINS_LIMIT));
-    // const mainPinLocation = getPinLocation();
-    // window.form.setInputValue(addressInput, `${mainPinLocation.x}, ${mainPinLocation.y}`);
     fields.forEach((item) => {
       item.removeAttribute(`disabled`);
     });

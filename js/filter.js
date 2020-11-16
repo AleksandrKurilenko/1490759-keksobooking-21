@@ -10,7 +10,7 @@
   const checkboxWifi = mapFilters.querySelectorAll(`.map__features input`);
   const selectPrice = mapFilters.querySelector(`#housing-price`);
 
-  const transferMoney = function (elem) {
+  const transferMoney = (elem) => {
     if (elem < 10000) {
       return `low`;
     } else if (elem >= 10000 && elem < 50000) {

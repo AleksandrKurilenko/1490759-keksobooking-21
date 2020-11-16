@@ -32,15 +32,15 @@
     }
   };
 
-  userTimeIn.addEventListener(`change`, function () {
+  userTimeIn.addEventListener(`change`, () => {
     userTimeOut.value = userTimeIn.value;
   });
 
-  userTimeOut.addEventListener(`change`, function () {
+  userTimeOut.addEventListener(`change`, () => {
     userTimeIn.value = userTimeOut.value;
   });
 
-  userTypeOption.addEventListener(`change`, function () {
+  userTypeOption.addEventListener(`change`, () => {
     userPriceInput.min = housePrices[userTypeOption.value];
     userPriceInput.placeholder = housePrices[userTypeOption.value];
   });
@@ -152,9 +152,7 @@
     clearAll();
   });
   adForm.capacity.addEventListener(`change`, capacityChange);
-
   adForm.rooms.addEventListener(`change`, roomsChange);
-
   adForm.querySelector(`.ad-form__submit`).addEventListener(`click`, onAdFormClick);
 
   window.form = {

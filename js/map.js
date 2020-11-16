@@ -2,6 +2,12 @@
 
 (() => {
 
+  const map = document.querySelector(`.map`);
+  const adForm = document.querySelector(`.ad-form`);
+  const addressInput = adForm.querySelector(`[name="address"]`);
+  const mapPin = document.querySelector(`.map__pin--main`);
+  let isFirsRender = true;
+  let dragged = true;
   const MainPin = {
     HEIGHT: 17,
     WIDTH: 33,
@@ -11,14 +17,7 @@
     BOTTOM_Y: 630
   };
 
-  const map = document.querySelector(`.map`);
-  const adForm = document.querySelector(`.ad-form`);
-  const addressInput = adForm.querySelector(`[name="address"]`);
-  const mapPin = document.querySelector(`.map__pin--main`);
-  let isFirsRender = true;
-  let dragged = true;
-
-  const getPositionOffSetElem = function (elem) {
+  const getPositionOffSetElem = (elem) => {
     return {
       x: elem.offsetLeft,
       y: elem.offsetTop
@@ -26,7 +25,7 @@
   };
 
   // код перемещения метки по карте
-  mapPin.addEventListener(`mousedown`, function (evt) {
+  mapPin.addEventListener(`mousedown`, (evt) => {
     evt.preventDefault();
     dragged = false;
     const moveOfSet = {
@@ -34,7 +33,7 @@
       top: map.offsetTop
     };
 
-    const onMouseMove = function (moveEvt) {
+    const onMouseMove = (moveEvt) => {
       moveEvt.preventDefault();
       const posX = Math.max(Math.min(moveEvt.pageX - moveOfSet.left, MainPin.RIGHT_X), MainPin.LEFT_X);
       const posY = Math.max(Math.min(moveEvt.pageY - moveOfSet.top, MainPin.BOTTOM_Y), MainPin.TOP_Y);
@@ -52,7 +51,7 @@
       addressInput.value = coordPinX + `,` + coordPinY;
     };
 
-    const onMouseUp = function (upEvt) {
+    const onMouseUp = (upEvt) => {
       upEvt.preventDefault();
       document.removeEventListener(`mousemove`, onMouseMove);
       document.removeEventListener(`mouseup`, onMouseUp);
