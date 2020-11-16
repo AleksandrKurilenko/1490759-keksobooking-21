@@ -4,6 +4,7 @@
 
   const ESC_KEYCODE = 27;
   const HEIGHT_INDENT = 22;
+  const PINS_LIMIT = 5;
   const typesOfHousing = {
     palace: `Дворец`,
     flat: `Квартира`,
@@ -135,7 +136,7 @@
 
   const setCard = (adsElement) => {
     const cardElement = cardTemplate.cloneNode(true);
-    const {title, address, price, type, rooms, guests, checkin, checkout, description, features, photos} = adsElement.offer;
+    const { title, address, price, type, rooms, guests, checkin, checkout, description, features, photos } = adsElement.offer;
     const roomsForm = declension([`комната`, `комнаты`, `комнат`], rooms);
     const guestsForm = declension([`гостя`, `гостей`, `гостей`], guests);
     cardElement.querySelector(`.popup__title`).textContent = title;
@@ -194,14 +195,16 @@
 
   window.load.load(onPinsReceived, onLoadError);
 
+  const myData = () => adsList;
+
   const onMapPinClick = function () {
     map.classList.remove(`map--faded`);
     window.form.adForm.classList.remove(`ad-form--disabled`);
     window.form.setCapacityValue();
     window.form.setCapacityDisabled();
-    renderPinsOnMap(adsList);
-    const mainPinLocation = getPinLocation();
-    window.form.setInputValue(addressInput, `${mainPinLocation.x}, ${mainPinLocation.y}`);
+    renderPinsOnMap(adsList.slice(0, PINS_LIMIT));
+    // const mainPinLocation = getPinLocation();
+    // window.form.setInputValue(addressInput, `${mainPinLocation.x}, ${mainPinLocation.y}`);
     fields.forEach((item) => {
       item.removeAttribute(`disabled`);
     });
@@ -216,13 +219,21 @@
 
   const init = () => {
     addDisabled();
+    const mainPinLocation = getPinLocation();
+    window.form.setInputValue(addressInput, `${mainPinLocation.x}, ${mainPinLocation.y}`);
   };
 
   init();
 
   window.main = {
     mapPin,
-    onMapPinClick
+    onMapPinClick,
+    init,
+    addDisabled,
+    addressInput,
+    getPinLocation,
+    renderPinsOnMap,
+    myData
   };
 
 })();
