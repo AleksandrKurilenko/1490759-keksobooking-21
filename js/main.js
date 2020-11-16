@@ -136,7 +136,7 @@
 
   const setCard = (adsElement) => {
     const cardElement = cardTemplate.cloneNode(true);
-    const { title, address, price, type, rooms, guests, checkin, checkout, description, features, photos } = adsElement.offer;
+    const {title, address, price, type, rooms, guests, checkin, checkout, description, features, photos} = adsElement.offer;
     const roomsForm = declension([`комната`, `комнаты`, `комнат`], rooms);
     const guestsForm = declension([`гостя`, `гостей`, `гостей`], guests);
     cardElement.querySelector(`.popup__title`).textContent = title;
