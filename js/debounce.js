@@ -2,7 +2,7 @@
 
 (() => {
 
-  let DEBOUNCE = 500; // ms
+  const DEBOUNCE = 500; // ms
   let lastTimeout;
 
   const getRandomArray = (array, n) => {

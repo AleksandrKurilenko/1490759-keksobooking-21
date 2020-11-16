@@ -30,7 +30,7 @@
 
   const filterFeatures = (item) => {
     const feauteresArray = item.offer.features;
-    let checkboxes = [];
+    const checkboxes = [];
     checkboxWifi.forEach((it) => it.checked && checkboxes.push(it.value));
 
     return checkboxes.every((elem) => feauteresArray.indexOf(elem) > -1);
@@ -38,14 +38,17 @@
 
   const updatePins = () => {
     const housingData = window.main.myData();
-    let data = housingData.filter((item) => {
+    const data = housingData.filter((item) => {
       return filterByHousingType(item) && filterByGuests(item) && filterByRooms(item) && filterByPrice(item) && filterFeatures(item);
     }).slice(0, PINS_LIMIT);
     window.form.removePins();
     window.main.renderPinsOnMap(data);
   };
 
-  mapFilters.addEventListener(`change`, updatePins);
+
+  mapFilters.addEventListener(`change`, () => {
+    window.debounce.debounce(updatePins);
+  });
 
   window.filter = {
     updatePins

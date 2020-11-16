@@ -1,10 +1,7 @@
 "use strict";
 
 (() => {
-  const ESC_KEY = 27;
-  const TIME_INTERVAL = 100;
-  const START_COORDINATES_LEFT = 570;
-  const START_COORDINATES_TOP = 375;
+
   const adForm = document.querySelector(`.ad-form`);
   const map = document.querySelector(`.map`);
   const userTimeIn = document.querySelector(`#timein`);
@@ -12,6 +9,12 @@
   const userPriceInput = document.querySelector(`#price`);
   const userTypeOption = document.querySelector(`#type`);
   const successTemplate = document.querySelector(`#success`).content.querySelector(`.success`);
+  const EnumerationOfConstants = {
+    ESC_KEY: 27,
+    TIME_INTERVAL: 100,
+    START_COORDINATES_LEFT: 570,
+    START_COORDINATES_TOP: 375
+  };
 
   const housePrices = {
     palace: 10000,
@@ -93,7 +96,6 @@
   const setSuccessMessage = () => {
     const successElement = successTemplate.cloneNode(true);
     document.body.appendChild(successElement);
-
     document.addEventListener(`keydown`, onEscKey);
     document.addEventListener(`click`, onClick);
 
@@ -115,9 +117,9 @@
     setTimeout(() => {
       const mainPinLocation = window.main.getPinLocation();
       setInputValue(window.main.addressInput, `${mainPinLocation.x}, ${mainPinLocation.y}`);
-    }, TIME_INTERVAL);
-    window.map.mapPin.style.left = `${START_COORDINATES_LEFT}px`;
-    window.map.mapPin.style.top = `${START_COORDINATES_TOP}px`;
+    }, EnumerationOfConstants.TIME_INTERVAL);
+    window.map.mapPin.style.left = `${EnumerationOfConstants.START_COORDINATES_LEFT}px`;
+    window.map.mapPin.style.top = `${EnumerationOfConstants.START_COORDINATES_TOP}px`;
     document.removeEventListener(`keydown`, onEscKey);
     adForm.classList.add(`ad-form--disabled`);
     map.classList.add(`map--faded`);
@@ -132,7 +134,7 @@
   const onEscKey = (evt) => {
     evt.preventDefault();
 
-    if (evt.keyCode === ESC_KEY) {
+    if (evt.keyCode === EnumerationOfConstants.ESC_KEY) {
       clearAll();
     }
   };
@@ -156,6 +158,7 @@
   adForm.querySelector(`.ad-form__submit`).addEventListener(`click`, onAdFormClick);
 
   window.form = {
+    constants: EnumerationOfConstants,
     adForm,
     setInputValue,
     setValidation,

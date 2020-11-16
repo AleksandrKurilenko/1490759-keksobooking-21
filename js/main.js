@@ -15,8 +15,8 @@
   const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
   const map = document.querySelector(`.map`);
   const mapPins = document.querySelector(`.map__pins`);
-  let currentCard = null;
-  let activePin = null;
+  const currentCard = null;
+  const activePin = null;
   let adsList = [];
   const typesOfHousing = {
     palace: `Дворец`,
