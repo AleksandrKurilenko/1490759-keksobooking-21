@@ -9,11 +9,15 @@
   const housingRooms = mapFilters.querySelector(`#housing-rooms`);
   const checkboxWifi = mapFilters.querySelectorAll(`.map__features input`);
   const selectPrice = mapFilters.querySelector(`#housing-price`);
+  const PriceOfConstants = {
+    MIN_PRICE: 10000,
+    MAX_PRICE: 50000
+  };
 
   const transferMoney = (elem) => {
-    if (elem < 10000) {
+    if (elem < PriceOfConstants.MIN_PRICE) {
       return `low`;
-    } else if (elem >= 10000 && elem < 50000) {
+    } else if (elem >= PriceOfConstants.MIN_PRICE && elem < PriceOfConstants.MAX_PRICE) {
       return `middle`;
     } else {
       return `high`;
@@ -42,7 +46,7 @@
       return filterByHousingType(item) && filterByGuests(item) && filterByRooms(item) && filterByPrice(item) && filterFeatures(item);
     }).slice(0, PINS_LIMIT);
     window.form.removePins();
-    window.main.renderPinsOnMap(data);
+    window.pins.renderOnMap(data);
   };
 
 
@@ -51,6 +55,7 @@
   });
 
   window.filter = {
-    updatePins
+    updatePins,
+    constants: PriceOfConstants,
   };
 })();

@@ -7,32 +7,13 @@
   const PINS_LIMIT = 5;
   const fields = document.querySelectorAll(`.ad-form fieldset`);
   const mapFilters = document.querySelectorAll(`.map__filters select, .map__filters fieldset`);
-  const cardTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
-  const mapFilterContainer = document.querySelector(`.map__filters-container`);
   const addressInput = document.querySelector(`#address`);
   const errorTemplate = document.querySelector(`#error`).content.querySelector(`.error`);
   const mapPin = document.querySelector(`.map__pin--main`);
-  const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
   const map = document.querySelector(`.map`);
-  const mapPins = document.querySelector(`.map__pins`);
-  const currentCard = null;
-  const activePin = null;
+  let currentCard = null;
+  let activePin = null;
   let adsList = [];
-  const typesOfHousing = {
-    palace: `Дворец`,
-    flat: `Квартира`,
-    house: `Дом`,
-    bungalo: `Бунгало`,
-  };
-
-  const featuresClasses = {
-    wifi: `popup__feature--wifi`,
-    dishwasher: `popup__feature--dishwasher`,
-    parking: `popup__feature--parking`,
-    washer: `popup__feature--washer`,
-    elevator: `popup__feature--elevator`,
-    conditioner: `popup__feature--conditioner`,
-  };
 
   const escPush = {
     isEscEvent(evt, action) { // ф-я проверки нажатия кнопки esc и действия после нажатия
@@ -43,51 +24,21 @@
   };
 
   const onButtonCloseClick = function () { // ф-я закрытия карточки
-    if (!currentCard) {
+    if (!window.main.currentCard) {
       return;
     }
-    if (activePin) {
-      activePin.classList.remove(`map__pin--active`);
-      activePin = null;
+    if (window.main.activePin) {
+      window.main.activePin.classList.remove(`map__pin--active`);
+      window.main.activePin = null;
     }
-    currentCard.remove();
-    currentCard = null;
+    window.main.currentCard.remove();
+    window.main.currentCard = null;
     document.removeEventListener(`keydown`, onCardEscPress);
   };
 
   const onCardEscPress = function (evt) { // ф-я закрытия карточки по нажатию esc
     escPush.isEscEvent(evt, onButtonCloseClick);
     document.removeEventListener(`keydown`, onCardEscPress);
-  };
-
-  const declension = (forms, number) => {
-    const cases = [2, 0, 1, 1, 1, 2];
-    return forms[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
-  };
-
-  const renderPhotos = (photos, container) => {
-    const fragment = document.createDocumentFragment();
-    const photoTemplate = container.querySelector(`.popup__photo`);
-    let newPhoto;
-    container.innerHTML = ``;
-
-    photos.forEach((item) => {
-      newPhoto = photoTemplate.cloneNode(false);
-      newPhoto.src = item;
-      fragment.appendChild(newPhoto);
-    });
-
-    container.appendChild(fragment);
-  };
-
-  const renderFeatures = (features, container) => {
-    container.innerHTML = ``;
-
-    features.forEach((item) => {
-      const li = document.createElement(`li`);
-      li.classList.add(`popup__feature`, featuresClasses[item]);
-      container.appendChild(li);
-    });
   };
 
   const getPinLocation = () => {
@@ -110,59 +61,6 @@
         y: Math.round(location.y + size.height + HEIGHT_INDENT)
       };
     }
-  };
-
-  const setPin = (pin) => {
-    const pinElement = pinTemplate.cloneNode(true);
-    const pinWidth = pinElement.style.width;
-    const pinHeight = pinElement.style.height;
-    pinElement.style.left = `${pin.location.x + pinWidth / 2}px`;
-    pinElement.style.top = `${pin.location.y + pinHeight}px`;
-    const img = pinElement.querySelector(`img`);
-    img.src = pin.author.avatar;
-    img.alt = pin.author.title;
-
-    pinElement.addEventListener(`click`, () => {
-      onButtonCloseClick();
-      renderCardOnMap(pin);
-      activePin = pinElement;
-      activePin.classList.add(`map__pin--active`);
-    });
-
-    return pinElement;
-  };
-
-  const setCard = (adsElement) => {
-    const cardElement = cardTemplate.cloneNode(true);
-    const {title, address, price, type, rooms, guests, checkin, checkout, description, features, photos} = adsElement.offer;
-    const roomsForm = declension([`комната`, `комнаты`, `комнат`], rooms);
-    const guestsForm = declension([`гостя`, `гостей`, `гостей`], guests);
-    cardElement.querySelector(`.popup__title`).textContent = title;
-    cardElement.querySelector(`.popup__text--address`).textContent = address;
-    cardElement.querySelector(`.popup__text--price`).firstChild.textContent = `${price}\u20BD`;
-    cardElement.querySelector(`.popup__type`).textContent = typesOfHousing[type];
-    cardElement.querySelector(`.popup__text--capacity`).textContent = `${rooms} ${roomsForm} для ${guests} ${guestsForm}`;
-    cardElement.querySelector(`.popup__text--time`).textContent = `Заезд после ${checkin} выезд до ${checkout}`;
-    cardElement.querySelector(`.popup__description`).textContent = description;
-    renderFeatures(features, cardElement.querySelector(`.popup__features`));
-    renderPhotos(photos, cardElement.querySelector(`.popup__photos`));
-    cardElement.querySelector(`.popup__avatar`).src = adsElement.author.avatar;
-    currentCard = cardElement;
-    cardElement.querySelector(`.popup__close`).addEventListener(`click`, onButtonCloseClick);
-    document.addEventListener(`keydown`, onCardEscPress);
-    return cardElement;
-  };
-
-  const renderPinsOnMap = (pins) => {
-    const fragment = document.createDocumentFragment();
-    for (let i = 0; i < pins.length; i++) {
-      fragment.appendChild(setPin(pins[i]));
-    }
-    mapPins.appendChild(fragment);
-  };
-
-  const renderCardOnMap = (adsElement) => {
-    map.insertBefore(setCard(adsElement), mapFilterContainer);
   };
 
   const addDisabled = () => {
@@ -200,7 +98,7 @@
     window.form.adForm.classList.remove(`ad-form--disabled`);
     window.form.setCapacityValue();
     window.form.setCapacityDisabled();
-    renderPinsOnMap(adsList.slice(0, PINS_LIMIT));
+    window.pins.renderOnMap(adsList.slice(0, PINS_LIMIT));
     fields.forEach((item) => {
       item.removeAttribute(`disabled`);
     });
@@ -208,10 +106,10 @@
     mapFilters.forEach((item) => {
       item.removeAttribute(`disabled`);
     });
-    mapPin.removeEventListener(`click`, onMapPinClick);
+    mapPin.removeEventListener(`mousedown`, onMapPinClick);
   };
 
-  mapPin.addEventListener(`click`, onMapPinClick);
+  mapPin.addEventListener(`mousedown`, onMapPinClick);
 
   const init = () => {
     addDisabled();
@@ -228,8 +126,11 @@
     addDisabled,
     addressInput,
     getPinLocation,
-    renderPinsOnMap,
-    myData
+    myData,
+    currentCard,
+    onButtonCloseClick,
+    onCardEscPress,
+    activePin
   };
 
 })();

@@ -13,7 +13,8 @@
     ESC_KEY: 27,
     TIME_INTERVAL: 100,
     START_COORDINATES_LEFT: 570,
-    START_COORDINATES_TOP: 375
+    START_COORDINATES_TOP: 375,
+    HUNDRED_ROOMS_VALUE: 100
   };
 
   const housePrices = {
@@ -24,11 +25,11 @@
   };
 
   const setValidation = () => {
-    if (parseInt(adForm.rooms.value, 10) === 100 && parseInt(adForm.capacity.value, 10) > 0) {
+    if (parseInt(adForm.rooms.value, 10) === EnumerationOfConstants.HUNDRED_ROOMS_VALUE && parseInt(adForm.capacity.value, 10) > 0) {
       adForm.capacity.setCustomValidity(`Не для гостей`);
     } else if (parseInt(adForm.rooms.value, 10) < parseInt(adForm.capacity.value, 10)) {
       adForm.capacity.setCustomValidity(`На всех гостей комнат не хватит`);
-    } else if (parseInt(adForm.rooms.value, 10) !== 100 && !parseInt(adForm.capacity.value, 10)) {
+    } else if (parseInt(adForm.rooms.value, 10) !== EnumerationOfConstants.HUNDRED_ROOMS_VALUE && !parseInt(adForm.capacity.value, 10)) {
       adForm.capacity.setCustomValidity(`Для гостей`);
     } else {
       adForm.capacity.setCustomValidity(``);
@@ -54,7 +55,7 @@
     Array.from(window.form.adForm.capacity.options).forEach((item) => {
       const optionCapacity = parseInt(item.value, 10);
 
-      if (roomValue === 100) {
+      if (roomValue === EnumerationOfConstants.HUNDRED_ROOMS_VALUE) {
         item.disabled = !!optionCapacity;
       } else {
         item.disabled = roomValue < optionCapacity || !optionCapacity;
@@ -67,7 +68,7 @@
   };
 
   const setCapacityValue = () => {
-    adForm.capacity.value = adForm.rooms.value < 100 ? adForm.rooms.value : 0;
+    adForm.capacity.value = adForm.rooms.value < EnumerationOfConstants.HUNDRED_ROOMS_VALUE ? adForm.rooms.value : 0;
   };
 
   const roomsChange = () => {
@@ -126,7 +127,7 @@
     adForm.reset();
     window.main.addDisabled();
     removePins();
-    window.main.mapPin.addEventListener(`click`, window.main.onMapPinClick);
+    window.main.mapPin.addEventListener(`mousedown`, window.main.onMapPinClick);
     document.removeEventListener(`keydown`, onEscKey);
     document.removeEventListener(`click`, onClick);
   };
